@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "order")
+@Table(name = "orders")
 public class Order {
 
     @Id
@@ -37,5 +37,11 @@ public class Order {
 
     @ManyToOne
     private User user;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus=OrderStatus.NEW;
+
+
 
 }

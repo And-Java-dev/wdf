@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     @Id
@@ -43,8 +43,13 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private UserType userType;
+    private UserType userType=UserType.USER;
 
+    @Column
+    private boolean isEnable;
+
+    @Column
+    private String token;
 
     @OneToOne
     private Image image;
