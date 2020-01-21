@@ -29,4 +29,8 @@ public class Image {
     @JsonIgnore
     @ManyToMany(cascade=CascadeType.ALL ,mappedBy = "images")
     private List<Product> products;
+
+    @JsonIgnore
+    @ManyToMany(cascade=CascadeType.ALL ,mappedBy = "images")
+    private List<Material> materials;
 }

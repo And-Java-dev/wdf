@@ -7,33 +7,18 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Builder
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Entity
-@Table(name = "sizes")
-public class Size {
+@Table(name = "materialCategories")
+public class MaterialCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column
-    private double height;
-
-    @Column
-    private double width;
-
-    @Column
-    private double length;
-
-    @Column
-    private double weight;
-
-    @Column(name = "square_meter")
-    private double squareMeter;
-
-    @Column
-    private double thickness;
+    private String title;
 }

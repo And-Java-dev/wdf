@@ -19,4 +19,5 @@ public interface OrderService {
     void delete(long id);
     void save(Order order,long user_id,List<Product> products);
     void changeOrderStatus(OrderStatus orderStatus,long id);
+    void save(Order order);
 }

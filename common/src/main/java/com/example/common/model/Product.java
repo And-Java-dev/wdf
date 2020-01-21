@@ -34,8 +34,12 @@ public class Product {
     @OneToOne
     private Size size;
 
-    @ManyToOne
-    private  Material material;
+    @ManyToMany
+    @JoinTable(
+            name = "product_material",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "material_id"))
+    private  List<Material> materials;
 
     @Column
     private int count;
@@ -48,7 +52,7 @@ public class Product {
             inverseJoinColumns = @JoinColumn(name = "image_id"))
     private List<Image> images;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
 

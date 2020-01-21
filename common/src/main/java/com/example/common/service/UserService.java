@@ -1,5 +1,6 @@
 package com.example.common.service;
 
+import com.example.common.model.Address;
 import com.example.common.model.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,13 +10,15 @@ import java.util.List;
 public interface UserService {
     List<User> findAll();
 
-    void register(User user, MultipartFile multipartFile) throws IOException;
+    void register(User user, MultipartFile multipartFile, Address address) throws IOException;
 
     void activate(String token);
 
     boolean isEmailExists(String email);
 
     User findById(long id);
+
+    void save(User user);
 
     boolean isExists(String email);
 

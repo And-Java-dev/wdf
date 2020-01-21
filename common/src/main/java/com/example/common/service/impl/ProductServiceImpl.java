@@ -27,14 +27,13 @@ public class ProductServiceImpl implements ProductService {
 
     private final SizeRepository sizeRepository;
 
-    private final MaterialRepository materialRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository, ImageRepository imageRepository, CategoryRepository categoryRepository, SizeRepository sizeRepository, MaterialRepository materialRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, ImageRepository imageRepository, CategoryRepository categoryRepository, SizeRepository sizeRepository) {
         this.productRepository = productRepository;
         this.imageRepository = imageRepository;
         this.categoryRepository = categoryRepository;
         this.sizeRepository = sizeRepository;
-        this.materialRepository = materialRepository;
+
     }
 
     @Override
@@ -48,8 +47,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAllByMaterial(String title) {
-        return productRepository.findAllByMaterialTitle(title);
+    public List<Product> findAllByMaterials(Material title) {
+        return productRepository.findAllByMaterialsTitle(title);
     }
 
     @Override
@@ -58,7 +57,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void save(Product product, MultipartFile[] multipartFile, long size_id, long material_id, long category_id) throws IOException {
+    public void save(Product product) {
+        productRepository.save(product);
+    }
+
+    @Override
+    public void save(Product product, MultipartFile[] multipartFile, Size size, List<Material> materials, long category_id) throws IOException {
         Image image = null;
         List<Image> images = new ArrayList<>();
         for (MultipartFile file : multipartFile) {
@@ -71,13 +75,12 @@ public class ProductServiceImpl implements ProductService {
             imageRepository.save(image);
         }
 
+        sizeRepository.save(size);
         Category category = categoryRepository.getOne(category_id);
-        Material material = materialRepository.getOne(material_id);
-        Size size = sizeRepository.getOne(size_id);
-         product = Product.builder()
+        product = Product.builder()
                 .category(category)
                 .size(size)
-                .material(material)
+                .materials(materials)
                 .images(images)
                 .build();
         productRepository.save(product);
@@ -87,5 +90,30 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteById(long id) {
         productRepository.deleteById(id);
+    }
+
+    @Override
+    public Product createProduct(List<Image> images, double height, double width, int count, List<Material> materials, Product product,String answer) {
+       double invoicePrice = 0;
+        for (Material material : materials) {
+            double invoicePrice1 = material.getInvoicePrice();
+          invoicePrice = invoicePrice1++;
+        }
+        Size size = Size.builder()
+                .height(height)
+                .width(width)
+                .build();
+        double price = height * width * invoicePrice;
+        product = Product.builder()
+                .images(images)
+                .materials(materials)
+                .size(size)
+                .price(price)
+                .count(count)
+                .build();
+        if (answer.equals("yes")){
+            productRepository.save(product);
+        }
+        return product;
     }
 }

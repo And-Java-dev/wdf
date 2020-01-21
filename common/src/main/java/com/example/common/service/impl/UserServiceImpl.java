@@ -1,5 +1,6 @@
 package com.example.common.service.impl;
 
+import com.example.common.model.Address;
 import com.example.common.model.Image;
 import com.example.common.model.User;
 import com.example.common.repository.ImageRepository;
@@ -43,7 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void register(User user, MultipartFile multipartFile) throws IOException {
+    public void register(User user, MultipartFile multipartFile, Address address) throws IOException {
         String imageName = multipartFile.getOriginalFilename();
         imageName = UUID.randomUUID() + "_" + imageName;
         File file = new File(imageUploadDir, imageName);
@@ -51,18 +52,19 @@ public class UserServiceImpl implements UserService {
         Image image = new Image();
         image.setName(imageName);
         imageRepository.save(image);
-         user = User.builder()
+        user = User.builder()
                 .password(passwordEncoder.encode(user.getPassword()))
                 .isEnable(false)
                 .token(UUID.randomUUID().toString())
                 .image(image)
+                .address(address)
                 .build();
 
         userRepository.save(user);
         String link = "http://localhost:8080/activate?token=" + user.getToken();
         emailService.sendSimpleMessage(user.getEmail(),
                 "Welcome",
-                "Congratulations! Dear "+user.getName()+" "+user.getSurname()+" have successfully register to system! \n" +
+                "Congratulations! Dear " + user.getName() + " " + user.getSurname() + " have successfully register to system! \n" +
                         "You have to activate your account by this link " + link);
     }
 
@@ -78,19 +80,15 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
-
-
     @Override
-    public boolean isEmailExists(String email){
+    public boolean isEmailExists(String email) {
         return userRepository.findByEmail(email) != null;
     }
 
 
-    public boolean isExists(String email){
+    public boolean isExists(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
-
 
 
     @Override
@@ -112,5 +110,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(long id) {
         return userRepository.getOne(id);
+    }
+
+    @Override
+    public void save(User user) {
+        userRepository.save(user);
     }
 }

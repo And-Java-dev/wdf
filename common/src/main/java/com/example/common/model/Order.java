@@ -32,10 +32,10 @@ public class Order {
     @Column
     private LocalDateTime deadline;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Product> products;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @Column
