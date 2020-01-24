@@ -16,7 +16,7 @@ public class SwaggerConfig {
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.example.wdfrest.endpoint"))
+                .apis(RequestHandlerSelectors.basePackage("com.example.wdfrest.endPoint"))
                 .paths(PathSelectors.any())
                 .build();
     }

@@ -2,6 +2,7 @@ package com.example.common.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "products")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Product {
 
     @Id
@@ -34,6 +36,7 @@ public class Product {
     @OneToOne
     private Size size;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "product_material",
@@ -56,4 +59,7 @@ public class Product {
     private Category category;
 
 
+    @JsonIgnore
+    @ManyToMany(cascade=CascadeType.ALL ,mappedBy = "products")
+    private List<Order> orders;
 }

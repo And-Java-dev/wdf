@@ -27,13 +27,16 @@ public class ProductServiceImpl implements ProductService {
 
     private final SizeRepository sizeRepository;
 
+    private final MaterialRepository materialRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository, ImageRepository imageRepository, CategoryRepository categoryRepository, SizeRepository sizeRepository) {
+
+    public ProductServiceImpl(ProductRepository productRepository, ImageRepository imageRepository, CategoryRepository categoryRepository, SizeRepository sizeRepository, MaterialRepository materialRepository) {
         this.productRepository = productRepository;
         this.imageRepository = imageRepository;
         this.categoryRepository = categoryRepository;
         this.sizeRepository = sizeRepository;
 
+        this.materialRepository = materialRepository;
     }
 
     @Override
@@ -47,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAllByMaterials(Material title) {
+    public List<Product> findAllByMaterials(String  title) {
         return productRepository.findAllByMaterialsTitle(title);
     }
 
@@ -93,26 +96,42 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product createProduct(List<Image> images, double height, double width, int count, List<Material> materials, Product product,String answer) {
+    public Product createProduct(List<Long> images, double height, double width, List<Long> materials, Product product,String answer,
+                                 Category category,String title,String desc,int count) {
        double invoicePrice = 0;
-        for (Material material : materials) {
+       List<Material> materialList = new ArrayList<>();
+        for (Long material : materials) {
+            Material one = materialRepository.getOne(material);
+            materialList.add(one);
+        }
+        for (Material material : materialList) {
             double invoicePrice1 = material.getInvoicePrice();
           invoicePrice = invoicePrice1++;
+        }
+        List<Image> imageList = new ArrayList<>();
+        for (Long image : images) {
+            Image one = imageRepository.getOne(image);
+            imageList.add(one);
         }
         Size size = Size.builder()
                 .height(height)
                 .width(width)
                 .build();
+        sizeRepository.save(size);
         double price = height * width * invoicePrice;
         product = Product.builder()
-                .images(images)
-                .materials(materials)
+                .images(imageList)
+                .materials(materialList)
                 .size(size)
                 .price(price)
+                .title(title)
                 .count(count)
+                .category(category)
+                .description(desc)
                 .build();
+        Product product1 = product;
         if (answer.equals("yes")){
-            productRepository.save(product);
+            productRepository.save(product1);
         }
         return product;
     }

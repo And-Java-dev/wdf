@@ -8,11 +8,15 @@ import com.example.common.repository.OrderRepository;
 import com.example.common.repository.ProductRepository;
 import com.example.common.repository.UserRepository;
 import com.example.common.service.OrderService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -35,6 +39,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Order findById(long id) {
+        return orderRepository.getOne(id);
+    }
+
+    @Override
     public List<Order> findAllByDeadLine(LocalDateTime localDateTime) {
         return orderRepository.findAllByDeadline(localDateTime);
     }
@@ -45,12 +54,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findAllByProductsId(Product products_id) {
+    public List<Order> findAllByProductsId(long products_id) {
         return orderRepository.findAllByProductsId(products_id);
     }
 
     @Override
-    public Order findByUserId(long id) {
+    public List<Order> findByUserId(long id) {
         return orderRepository.findByUserId(id);
     }
 
@@ -61,18 +70,26 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void delete(long id) {
-        productRepository.deleteById(id);
+        orderRepository.deleteById(id);
     }
 
     @Override
-    public void save(Order order, long user_id, List<Product> products) {
+    public void save(Order order, long user_id, List<Long> products) {
+        List<Product> products1 = new ArrayList<>();
+        for (Long product : products) {
+            Product one = productRepository.getOne(product);
+            products1.add(one);
+        }
+        LocalTime localTime = LocalTime.now();
         LocalDateTime localDateTime = LocalDateTime.now();
         User user = userRepository.getOne(user_id);
         order = Order.builder()
-                .date(new Date())
+                .date( new Date())
                 .deadline(localDateTime.plusDays(10))
-                .products(products)
+                .products(products1)
+                .time(localTime)
                 .user(user)
+                .orderStatus(OrderStatus.NEW)
                 .build();
         orderRepository.save(order);
     }

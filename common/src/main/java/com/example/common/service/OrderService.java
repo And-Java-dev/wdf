@@ -11,13 +11,14 @@ import java.util.List;
 public interface OrderService {
 
     List<Order> findAll();
+    Order findById(long id);
     List<Order> findAllByDeadLine(LocalDateTime localDateTime);
     List<Order> findAllByDate(Date date);
-    List<Order> findAllByProductsId(Product products_id);
-    Order findByUserId(long id);
+    List<Order> findAllByProductsId(long products_id);
+    List<Order> findByUserId(long id);
     List<Order> findAllByOrderStatus(OrderStatus orderStatus);
     void delete(long id);
-    void save(Order order,long user_id,List<Product> products);
+    void save(Order order,long user_id,List<Long> products);
     void changeOrderStatus(OrderStatus orderStatus,long id);
     void save(Order order);
 }

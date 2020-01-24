@@ -1,9 +1,12 @@
 package com.example.common.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -17,7 +20,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "orders")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Order {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,12 +32,19 @@ public class Order {
     private LocalTime time;
 
     @Column
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private Date date;
 
     @Column
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime deadline;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(
+            name = "order_product",
+            joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;
 
     @ManyToOne(fetch = FetchType.LAZY)
