@@ -4,7 +4,6 @@ package com.example.wdfrest.endPoint;
 import com.example.common.model.Order;
 import com.example.common.model.OrderStatus;
 import com.example.common.service.OrderService;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,7 @@ public class OrderEndPoint {
 
     @GetMapping("{userId}")
     public ResponseEntity findByUserId(@PathVariable("userId") long id) {
-        List<Order> byUserId =  orderService.findByUserId(id);
+        List<Order> byUserId =  orderService.findAllByUserId(id);
         return ResponseEntity.ok(byUserId);
     }
 
@@ -45,11 +44,11 @@ public class OrderEndPoint {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity changeOrderStatus(@RequestParam("status") OrderStatus orderStatus, @PathVariable("id") long id) {
-        orderService.changeOrderStatus(orderStatus, id);
-        return ResponseEntity.ok().build();
-    }
+//    @PutMapping("{id}")
+//    public ResponseEntity changeOrderStatus(@RequestParam("status") OrderStatus orderStatus, @PathVariable("id") long id) {
+//        orderService.changeOrderStatus(orderStatus, id);
+//        return ResponseEntity.ok().build();
+//    }
 
     @PostMapping("{userId}")
     public ResponseEntity save(@RequestBody Order order, @RequestParam List<Long> products, @PathVariable("userId") long userId) {

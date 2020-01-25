@@ -15,7 +15,7 @@ public interface OrderService {
     List<Order> findAllByDeadLine(LocalDateTime localDateTime);
     List<Order> findAllByDate(Date date);
     List<Order> findAllByProductsId(long products_id);
-    List<Order> findByUserId(long id);
+    List<Order> findAllByUserId(long id);
     List<Order> findAllByOrderStatus(OrderStatus orderStatus);
     void delete(long id);
     void save(Order order,long user_id,List<Long> products);

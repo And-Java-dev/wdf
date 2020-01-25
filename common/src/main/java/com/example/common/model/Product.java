@@ -62,4 +62,7 @@ public class Product {
     @JsonIgnore
     @ManyToMany(cascade=CascadeType.ALL ,mappedBy = "products")
     private List<Order> orders;
+
+    @ManyToMany(mappedBy = "products")
+    private List<User> users;
 }

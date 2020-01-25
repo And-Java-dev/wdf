@@ -13,9 +13,10 @@ public interface ProductService {
     List<Product> findAllByMaterials(String materials_title);
     Product findById(long id);
     void save(Product product);
-    void save(Product product, MultipartFile [] multipartFile, Size size, List<Material> materials, long category_id) throws IOException;
+    void save(Product product, MultipartFile [] multipartFile, Size size, List<Long> materials, long category_id) throws IOException;
     void deleteById(long id);
-    Product createProduct(List<Long> images, double height, double width, List<Long> materials,
+    Product createProduct(MultipartFile [] multipartFile, double height, double width, List<Long> materials,
                           Product product, String answer, Category category,String title,String desc,int count);
+    List<Product>addProducts(List<Long> products);
 
 }

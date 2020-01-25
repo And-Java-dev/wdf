@@ -8,7 +8,6 @@ import com.example.common.service.ImageService;
 import com.example.common.service.MaterialService;
 import com.example.common.service.ProductService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,33 +30,42 @@ public class ProductEndPoint {
     }
 
     @PutMapping
-    public ResponseEntity createProduct(@RequestBody Product product, @RequestParam("images") List<Long> images,
+    public ResponseEntity createProduct(@RequestBody Product product, @RequestParam("images") MultipartFile[] file,
                                         @RequestParam("height") double height, @RequestParam("width") double width,
                                         @RequestParam("answer") String answer, @RequestParam("category") Category category,
                                         @RequestParam("materials") List<Long> materials, @RequestParam("title") String title,
                                         @RequestParam("count") int count, @RequestParam("description") String desc) {
-        return ResponseEntity.ok(productService.createProduct(images, height, width, materials, product, answer, category, title, desc, count));
+        return ResponseEntity.ok(productService.createProduct(file, height, width, materials, product, answer, category, title, desc, count));
     }
 
-    @PostMapping
-    public ResponseEntity save(@RequestBody Product product) {
-        productService.save(product);
-        return ResponseEntity.ok().build();
+//    @PostMapping
+//    public ResponseEntity save(@RequestBody Product product) {
+//        productService.save(product);
+//        return ResponseEntity.ok().build();
+//
+//    }
 
-    }
+//    @PutMapping(value = "addImages/{productId}")
+//    public ResponseEntity addImages(@PathVariable("productId") long productId, @RequestParam(value = "images") MultipartFile[] file) {
+//        try {
+//            Product byId = productService.findById(productId);
+//            List<Image> imageList = imageService.addImages(file);
+//            byId.setImages(imageList);
+//            productService.save(byId);
+//        } catch (IOException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//        return ResponseEntity.ok().build();
+//    }
 
-    @PutMapping(value = "addImages/{productId}")
-    public ResponseEntity addImages(@PathVariable("productId") long productId, @RequestParam(value = "images") MultipartFile[] file) {
-        try {
-            Product byId = productService.findById(productId);
-            List<Image> imageList = imageService.addImages(file);
-            byId.setImages(imageList);
-            productService.save(byId);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-        return ResponseEntity.ok().build();
-    }
+//    @PutMapping(value = "addMaterials/{productId}")
+//    public ResponseEntity addImages(@PathVariable("productId") long productId, @RequestParam(value = "materials")List<Material> materials) {
+//            Product byId = productService.findById(productId);
+//            List<Material> materialList = materialService.saveMaterials(materials);
+//            byId.setMaterials(materialList);
+//            productService.save(byId);
+//        return ResponseEntity.ok().build();
+//    }
 
     @GetMapping
     public List<Product> findAll() {

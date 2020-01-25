@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order,Long> {
 
-    List<Order> findAllByUserId(long id);
+    List<Order> findAllByUserId(long user_id);
     List<Order> findAllByDate(Date date);
     List<Order> findAllByDeadline(LocalDateTime localDateTime);
     List<Order> findAllByProductsId(long products_id);

@@ -30,13 +30,18 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public List<Material> findAllByCategoriesId(Category categories_id) {
+    public List<Material> findAllByCategoriesId(long categories_id) {
         return materialRepository.findAllByCategoriesId(categories_id);
     }
 
     @Override
-    public List<Material> findAllByProductsId(Product products_id) {
+    public List<Material> findAllByProductsId(long products_id) {
         return materialRepository.findAllByProductsId(products_id);
+    }
+
+    @Override
+    public List<Material> findAll() {
+        return materialRepository.findAll();
     }
 
     @Override
@@ -81,4 +86,17 @@ public class MaterialServiceImpl implements MaterialService {
     public void save(Material material) {
         materialRepository.save(material);
     }
+
+    @Override
+    public List<Material> addMaterials(List<Long> materials) {
+        List<Material> materialList = new ArrayList<>();
+        for (Long material : materials) {
+            Material byId = findById(material);
+            materialList.add(byId);
+        }
+
+        return materialList;
+    }
+
+
 }

@@ -2,6 +2,7 @@ package com.example.common.service.impl;
 
 import com.example.common.model.*;
 import com.example.common.repository.*;
+import com.example.common.service.MaterialService;
 import com.example.common.service.ProductService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,14 +30,16 @@ public class ProductServiceImpl implements ProductService {
 
     private final MaterialRepository materialRepository;
 
+    private final MaterialService materialService;
 
-    public ProductServiceImpl(ProductRepository productRepository, ImageRepository imageRepository, CategoryRepository categoryRepository, SizeRepository sizeRepository, MaterialRepository materialRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, ImageRepository imageRepository, CategoryRepository categoryRepository, SizeRepository sizeRepository, MaterialRepository materialRepository, MaterialService materialService) {
         this.productRepository = productRepository;
         this.imageRepository = imageRepository;
         this.categoryRepository = categoryRepository;
         this.sizeRepository = sizeRepository;
 
         this.materialRepository = materialRepository;
+        this.materialService = materialService;
     }
 
     @Override
@@ -65,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void save(Product product, MultipartFile[] multipartFile, Size size, List<Material> materials, long category_id) throws IOException {
+    public void save(Product product, MultipartFile[] multipartFile, Size size, List<Long> materials, long category_id) throws IOException {
         Image image = null;
         List<Image> images = new ArrayList<>();
         for (MultipartFile file : multipartFile) {
@@ -77,13 +80,14 @@ public class ProductServiceImpl implements ProductService {
             images.add(image);
             imageRepository.save(image);
         }
+        List<Material> materialList = materialService.addMaterials(materials);
 
         sizeRepository.save(size);
         Category category = categoryRepository.getOne(category_id);
         product = Product.builder()
                 .category(category)
                 .size(size)
-                .materials(materials)
+                .materials(materialList)
                 .images(images)
                 .build();
         productRepository.save(product);
@@ -96,7 +100,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product createProduct(List<Long> images, double height, double width, List<Long> materials, Product product,String answer,
+    public Product createProduct(MultipartFile [] multipartFile, double height, double width, List<Long> materials, Product product,String answer,
                                  Category category,String title,String desc,int count) {
        double invoicePrice = 0;
        List<Material> materialList = new ArrayList<>();
@@ -108,10 +112,20 @@ public class ProductServiceImpl implements ProductService {
             double invoicePrice1 = material.getInvoicePrice();
           invoicePrice = invoicePrice1++;
         }
-        List<Image> imageList = new ArrayList<>();
-        for (Long image : images) {
-            Image one = imageRepository.getOne(image);
-            imageList.add(one);
+        Image image = null;
+        List<Image> images = new ArrayList<>();
+        for (MultipartFile file : multipartFile) {
+            String picUrl = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            File file1 = new File(imageUploadDir, picUrl);
+            image = new Image();
+            image.setName(picUrl);
+            try {
+                file.transferTo(file1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            images.add(image);
+            imageRepository.save(image);
         }
         Size size = Size.builder()
                 .height(height)
@@ -120,7 +134,7 @@ public class ProductServiceImpl implements ProductService {
         sizeRepository.save(size);
         double price = height * width * invoicePrice;
         product = Product.builder()
-                .images(imageList)
+                .images(images)
                 .materials(materialList)
                 .size(size)
                 .price(price)
@@ -134,5 +148,18 @@ public class ProductServiceImpl implements ProductService {
             productRepository.save(product1);
         }
         return product;
+    }
+
+
+
+    @Override
+    public List<Product> addProducts(List<Long> products) {
+        List<Product> productList = new ArrayList<>();
+        for (Long product : products) {
+            Product byId = findById(product);
+            productList.add(byId);
+        }
+
+        return productList;
     }
 }

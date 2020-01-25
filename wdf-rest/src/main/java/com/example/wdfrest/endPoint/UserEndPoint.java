@@ -2,9 +2,11 @@ package com.example.wdfrest.endPoint;
 
 import com.example.common.model.Address;
 import com.example.common.model.Image;
+import com.example.common.model.Product;
 import com.example.common.model.User;
 import com.example.common.service.AddressService;
 import com.example.common.service.ImageService;
+import com.example.common.service.ProductService;
 import com.example.common.service.UserService;
 import com.example.wdfrest.dto.AuthenticationRequest;
 import com.example.wdfrest.dto.AuthenticationResponse;
@@ -29,13 +31,15 @@ public class UserEndPoint {
     private final JwtTokenUtil jwtTokenUtil;
     private final ImageService imageService;
     private final AddressService addressService;
+    private final ProductService productService;
 
-    public UserEndPoint(UserService userService, PasswordEncoder passwordEncoder, JwtTokenUtil jwtTokenUtil, ImageService imageService, AddressService addressService) {
+    public UserEndPoint(UserService userService, PasswordEncoder passwordEncoder, JwtTokenUtil jwtTokenUtil, ImageService imageService, AddressService addressService, ProductService productService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenUtil = jwtTokenUtil;
         this.imageService = imageService;
         this.addressService = addressService;
+        this.productService = productService;
     }
 
     @PostMapping("auth")
@@ -71,21 +75,22 @@ public class UserEndPoint {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
-    public List<User> findAll() {
-        return userService.findAll();
-    }
+//    @GetMapping
+//    public List<User> findAll() {
+//        return userService.findAll();
+//    }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity deleteById(@PathVariable("id") long id) {
-        userService.deleteById(id);
-        return ResponseEntity.ok().build();
-
-    }
+//    @DeleteMapping("{id}")
+//    public ResponseEntity deleteById(@PathVariable("id") long id) {
+//        userService.deleteById(id);
+//        return ResponseEntity.ok().build();
+//
+//    }
 
     @GetMapping("{id}")
     public ResponseEntity findUserById(@PathVariable("id") long id) {
-        return ResponseEntity.ok(userService.findById(id));
+        User byId = userService.findById(id);
+        return ResponseEntity.ok(byId);
     }
 
     @PostMapping
@@ -103,6 +108,14 @@ public class UserEndPoint {
         User byId = userService.findById(userId);
         byId.setAddress(address);
         addressService.save(address);
+        userService.save(byId);
+    }
+
+    @PostMapping("products/{userId}")
+    public void addProducts(@RequestParam("products")List<Long> products,@PathVariable("userId") long userId){
+        User byId = userService.findById(userId);
+        List<Product> productList = productService.addProducts(products);
+        byId.setProducts(productList);
         userService.save(byId);
     }
 }

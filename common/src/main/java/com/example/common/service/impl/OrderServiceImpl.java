@@ -59,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findByUserId(long id) {
+    public List<Order> findAllByUserId(long id) {
         return orderRepository.findByUserId(id);
     }
 

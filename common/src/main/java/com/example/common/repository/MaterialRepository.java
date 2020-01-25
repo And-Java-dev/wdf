@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface MaterialRepository extends JpaRepository<Material,Long> {
 
-    List<Material> findAllByCategoriesId(Category categories_id);
-    List<Material> findAllByProductsId(Product products_id);
+    List<Material> findAllByCategoriesId(long categories_id);
+    List<Material> findAllByProductsId(long products_id);
     List<Material> findAllByMaterialCategoryTitle(String materialCategory_title);
 }

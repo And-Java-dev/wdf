@@ -35,9 +35,11 @@ public class Material {
     @OneToOne
     private Size size;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private MaterialCategory materialCategory;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "material_category",
@@ -45,6 +47,7 @@ public class Material {
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "material_image",
