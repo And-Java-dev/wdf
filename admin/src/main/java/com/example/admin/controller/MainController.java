@@ -57,7 +57,7 @@ public class MainController {
         modelMap.addAttribute("orders",orderService.findAll());
         modelMap.addAttribute("images",imageService.findAll());
         modelMap.addAttribute("materialCats",materialCategoryService.findAll());
-        modelMap.addAttribute("materials",materialService.findAll());
+//        modelMap.addAttribute("materials",materialService.findAll());
 
         log.info("Home page was opened.");
         return "boxed-layout";
