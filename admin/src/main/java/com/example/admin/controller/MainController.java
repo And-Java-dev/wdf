@@ -1,84 +1,92 @@
 package com.example.admin.controller;
 
 import com.example.admin.security.CurrentUser;
-import com.example.common.model.Product;
-import com.example.common.service.*;
+import com.example.common.model.Order;
+import com.example.common.model.User;
+import com.example.common.model.UserType;
+import com.example.common.service.OrderService;
+import com.example.common.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @Controller
 @Slf4j
+@RequestMapping("/admin")
 public class MainController {
 
-    @Value("${image.upload.dir}")
-    private String imageUploadDir;
 
-    private final ProductService productService;
-    private final CategoryService categoryService;
-    private final ImageService imageService;
-    private final MaterialService materialService;
-    private final MaterialCategoryService materialCategoryService;
+
+
     private final OrderService orderService;
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    public MainController(OrderService orderService, UserService userService, PasswordEncoder passwordEncoder) {
 
-    public MainController(ProductService productService, CategoryService categoryService, ImageService imageService, MaterialService materialService, MaterialCategoryService materialCategoryService, OrderService orderService, UserService userService) {
-        this.productService = productService;
-        this.categoryService = categoryService;
-        this.imageService = imageService;
-        this.materialService = materialService;
-        this.materialCategoryService = materialCategoryService;
         this.orderService = orderService;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
-
+//go main paige boxed-layout
     @GetMapping("/")
     public String home(ModelMap modelMap, @AuthenticationPrincipal CurrentUser currentUser) {
         if (currentUser != null) {
-            modelMap.addAttribute("user", currentUser.getUser());
-            List<Product> products = productService.findAll();
-            modelMap.addAttribute("products",products);
+            //all orders
+            List<Order> orders = orderService.findAll();
+            //orders days
+            List<Integer> days = orderService.findOrdersByDeadLine();
+            //count orders by NEW and COMPLETED status
+            int byStatus = orderService.findByStatus();
+            //all orders price
+            double allOrdersPrice = orderService.findAllOrdersPrice();
+            modelMap.addAttribute("orders",orders);
+            modelMap.addAttribute("days",days);
+            modelMap.addAttribute("byStatus",byStatus);
+            modelMap.addAttribute("allOrdersPrice",allOrdersPrice);
         }
-        modelMap.addAttribute("products",productService.findAll());
-        modelMap.addAttribute("categories",categoryService.findAll());
-        modelMap.addAttribute("users",userService.findAll());
-        modelMap.addAttribute("orders",orderService.findAll());
-        modelMap.addAttribute("images",imageService.findAll());
-        modelMap.addAttribute("materialCats",materialCategoryService.findAll());
-//        modelMap.addAttribute("materials",materialService.findAll());
-
         log.info("Home page was opened.");
         return "boxed-layout";
     }
 
-    @GetMapping(value = "/getImage", produces = MediaType.IMAGE_JPEG_VALUE)
-    public @ResponseBody
-    byte[] getImage(@RequestParam("picUrl") String picUrl) throws IOException {
-        return imageService.getImage(picUrl);
+    //go user page
+    @GetMapping("/profile-user")
+    public String userProfile(ModelMap modelMap,@RequestParam("userId") long userId){
+        User user = userService.findById(userId);
+        modelMap.addAttribute("user",user);
+        return "profile-about";
     }
 
-
-    @GetMapping("/single")
-    public String single(ModelMap modelMap,@RequestParam("id") int  id,@AuthenticationPrincipal CurrentUser currentUser){
-        modelMap.addAttribute(productService.findById(id));
-        modelMap.addAttribute("images",productService.findById(id).getImages());
-        if (currentUser.getUser() != null) {
+    //go admin page
+    @GetMapping("/profile-admin")
+    public String adminProfile(@AuthenticationPrincipal CurrentUser currentUser,ModelMap modelMap){
+        if (currentUser != null) {
             modelMap.addAttribute("user", currentUser.getUser());
-            List<Product> products = productService.findAllByUserId(currentUser.getUser().getId());
-            modelMap.addAttribute("products",products);
         }
-        return "single";
+
+        return "profile-admin";
     }
+
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestParam("email") String email,@RequestParam("password") String password){
+        User byEmail = userService.findByEmail(email);
+        if (passwordEncoder.matches(password,byEmail.getPassword()) && byEmail.getUserType() == UserType.ADMIN){
+            return "boxed-layout";
+        }
+        return "login";
+    }
+
+
 }

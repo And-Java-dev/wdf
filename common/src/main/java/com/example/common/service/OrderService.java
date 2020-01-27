@@ -21,4 +21,7 @@ public interface OrderService {
     void save(Order order,long user_id,List<Long> products);
     void changeOrderStatus(OrderStatus orderStatus,long id);
     void save(Order order);
+    List<Integer> findOrdersByDeadLine();
+    double findAllOrdersPrice();
+    int  findByStatus();
 }

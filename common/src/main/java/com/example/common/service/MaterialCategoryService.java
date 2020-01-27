@@ -8,4 +8,6 @@ public interface MaterialCategoryService {
 
     List<MaterialCategory> findAll();
     void addCategory(MaterialCategory materialCategory);
+
+    void deleteById(long id);
 }

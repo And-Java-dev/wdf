@@ -21,21 +21,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailService)
-            .passwordEncoder(passwordEncoder());
+                .passwordEncoder(passwordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()
-            .authorizeRequests()
-            .antMatchers("/").permitAll()
-            .antMatchers("/register").permitAll()
-            .antMatchers("/profile").hasAnyAuthority("ADMIN", "USER")
-            .antMatchers("/admin").hasAnyRole("ADMIN")
-//            .anyRequest().authenticated()
-            .and()
-            .formLogin();
+                .csrf().disable()
+                .formLogin().loginPage("/admin/login").and()
+                .authorizeRequests()
+                .antMatchers("/admin").hasAnyRole("ADMIN")
+                .anyRequest().authenticated()
+                .and()
+                .formLogin();
     }
 
     @Bean

@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Controller;
 
 import javax.persistence.*;
 import java.util.List;
@@ -42,7 +43,7 @@ public class Product {
             name = "product_material",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "material_id"))
-    private  List<Material> materials;
+    private List<Material> materials;
 
     @Column
     private int count;
@@ -58,9 +59,11 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
+    @Column
+    private double rating;
 
     @JsonIgnore
-    @ManyToMany(cascade=CascadeType.ALL ,mappedBy = "products")
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "products")
     private List<Order> orders;
 
     @ManyToMany(mappedBy = "products")

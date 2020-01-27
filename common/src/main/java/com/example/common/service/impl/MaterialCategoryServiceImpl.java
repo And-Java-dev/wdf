@@ -26,4 +26,9 @@ public class MaterialCategoryServiceImpl implements MaterialCategoryService {
     public void addCategory(MaterialCategory materialCategory) {
         materialCategoryRepository.save(materialCategory);
     }
+
+    @Override
+    public void deleteById(long id) {
+        materialCategoryRepository.deleteById(id);
+    }
 }

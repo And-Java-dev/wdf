@@ -47,18 +47,7 @@ public class ProductEndPoint {
 //
 //    }
 
-//    @PutMapping(value = "addImages/{productId}")
-//    public ResponseEntity addImages(@PathVariable("productId") long productId, @RequestParam(value = "images") MultipartFile[] file) {
-//        try {
-//            Product byId = productService.findById(productId);
-//            List<Image> imageList = imageService.addImages(file);
-//            byId.setImages(imageList);
-//            productService.save(byId);
-//        } catch (IOException e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//        return ResponseEntity.ok().build();
-//    }
+
 
 //    @PutMapping(value = "addMaterials/{productId}")
 //    public ResponseEntity addImages(@PathVariable("productId") long productId, @RequestParam(value = "materials")List<Material> materials) {

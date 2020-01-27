@@ -35,6 +35,9 @@ public class Material {
     @OneToOne
     private Size size;
 
+    @Column
+    private double rating;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private MaterialCategory materialCategory;

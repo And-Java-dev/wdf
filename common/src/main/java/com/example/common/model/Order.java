@@ -36,6 +36,9 @@ public class Order {
     private Date date;
 
     @Column
+    private double price;
+
+    @Column
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime deadline;
 
