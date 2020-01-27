@@ -11,9 +11,12 @@ import com.example.common.service.UserService;
 import com.example.wdfrest.dto.AuthenticationRequest;
 import com.example.wdfrest.dto.AuthenticationResponse;
 import com.example.wdfrest.dto.UserDto;
+import com.example.wdfrest.security.CurrentUser;
 import com.example.wdfrest.security.JwtTokenUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +36,7 @@ public class UserEndPoint {
     private final AddressService addressService;
     private final ProductService productService;
 
+
     public UserEndPoint(UserService userService, PasswordEncoder passwordEncoder, JwtTokenUtil jwtTokenUtil, ImageService imageService, AddressService addressService, ProductService productService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -40,6 +44,7 @@ public class UserEndPoint {
         this.imageService = imageService;
         this.addressService = addressService;
         this.productService = productService;
+
     }
 
     @PostMapping("auth")
@@ -62,10 +67,11 @@ public class UserEndPoint {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
     }
 
-    @PutMapping("addImage/{userId}")
-    public ResponseEntity addImage(@PathVariable("userId") long userId, @RequestParam(value = "file") MultipartFile file) {
+    @PutMapping("addImage/userId")
+    public ResponseEntity addImage(@AuthenticationPrincipal CurrentUser currentUser, @RequestParam(value = "file") MultipartFile file) {
         try {
-            User byId = userService.findById(userId);
+
+            User byId = userService.findById(currentUser.getUser().getId());
             Image image = imageService.addImage(file);
             byId.setImage(image);
             userService.save(byId);
@@ -87,9 +93,9 @@ public class UserEndPoint {
 //
 //    }
 
-    @GetMapping("{id}")
-    public ResponseEntity findUserById(@PathVariable("id") long id) {
-        User byId = userService.findById(id);
+    @GetMapping("id")
+    public ResponseEntity findUserById(@AuthenticationPrincipal CurrentUser user) {
+        User byId = userService.findById(user.getUser().getId());
         return ResponseEntity.ok(byId);
     }
 
@@ -103,17 +109,17 @@ public class UserEndPoint {
         return ResponseEntity.ok("user was success");
     }
 
-    @PostMapping("address/{userId}")
-    public void saveAddress(@RequestBody Address address,@PathVariable("userId") long userId){
-        User byId = userService.findById(userId);
+    @PostMapping("address")
+    public void saveAddress(@RequestBody Address address,@AuthenticationPrincipal CurrentUser user){
+        User byId = userService.findById(user.getUser().getId());
         byId.setAddress(address);
         addressService.save(address);
         userService.save(byId);
     }
 
-    @PostMapping("products/{userId}")
-    public void addProducts(@RequestParam("products")List<Long> products,@PathVariable("userId") long userId){
-        User byId = userService.findById(userId);
+    @PostMapping("products")
+    public void addProducts(@RequestParam("products")List<Long> products, @AuthenticationPrincipal CurrentUser user){
+        User byId = userService.findById(user.getUser().getId());
         List<Product> productList = productService.addProducts(products);
         byId.setProducts(productList);
         userService.save(byId);

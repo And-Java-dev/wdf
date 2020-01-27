@@ -4,8 +4,10 @@ package com.example.wdfrest.endPoint;
 import com.example.common.model.Order;
 import com.example.common.model.OrderStatus;
 import com.example.common.service.OrderService;
+import com.example.wdfrest.security.CurrentUser;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -27,10 +29,10 @@ public class OrderEndPoint {
         return orderService.findAll();
     }
 
-    @GetMapping("{userId}")
-    public ResponseEntity findByUserId(@PathVariable("userId") long id) {
-        List<Order> byUserId =  orderService.findAllByUserId(id);
-        return ResponseEntity.ok(byUserId);
+    @GetMapping("findByUserId")
+    public List<Order> findByUserId(@AuthenticationPrincipal CurrentUser currentUser) {
+        List<Order> byUserId =  orderService.findAllByUserId(currentUser.getUser().getId());
+        return byUserId;
     }
 
     @GetMapping("findByStatus")
@@ -40,7 +42,10 @@ public class OrderEndPoint {
 
     @DeleteMapping("{id}")
     public ResponseEntity deleteById(@PathVariable("id") long id) {
-        orderService.delete(id);
+        Order byId = orderService.findById(id);
+        byId.setUser(null);
+        byId.setOrderStatus(OrderStatus.DENIED);
+        orderService.save(byId);
         return ResponseEntity.ok().build();
     }
 
@@ -50,11 +55,13 @@ public class OrderEndPoint {
 //        return ResponseEntity.ok().build();
 //    }
 
-    @PostMapping("{userId}")
-    public ResponseEntity save(@RequestBody Order order, @RequestParam List<Long> products, @PathVariable("userId") long userId) {
-        orderService.save(order, userId, products);
+    @PostMapping("save")
+    public ResponseEntity save(@RequestBody Order order, @RequestParam List<Long> products, @AuthenticationPrincipal CurrentUser currentUser) {
+        orderService.save(order, currentUser.getUser().getId(), products);
         return ResponseEntity.ok().build();
     }
+
+
 
     @GetMapping("findByProduct")
     public List<Order> findAllByProductId(@RequestParam("productId") long prod_id) {

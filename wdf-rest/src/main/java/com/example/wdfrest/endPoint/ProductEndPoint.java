@@ -7,8 +7,10 @@ import com.example.common.model.Product;
 import com.example.common.service.ImageService;
 import com.example.common.service.MaterialService;
 import com.example.common.service.ProductService;
+import com.example.wdfrest.security.CurrentUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,8 +36,8 @@ public class ProductEndPoint {
                                         @RequestParam("height") double height, @RequestParam("width") double width,
                                         @RequestParam("answer") String answer, @RequestParam("category") Category category,
                                         @RequestParam("materials") List<Long> materials, @RequestParam("title") String title,
-                                        @RequestParam("count") int count, @RequestParam("description") String desc) {
-        return ResponseEntity.ok(productService.createProduct(file, height, width, materials, product, answer, category, title, desc, count));
+                                        @RequestParam("count") int count, @RequestParam("description") String desc, @AuthenticationPrincipal CurrentUser user) {
+        return ResponseEntity.ok(productService.createProduct(file, height, width, materials, product, answer, category, title, desc, count,user.getUser()));
     }
 
 //    @PostMapping

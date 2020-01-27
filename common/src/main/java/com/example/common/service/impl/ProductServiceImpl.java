@@ -5,6 +5,8 @@ import com.example.common.repository.*;
 import com.example.common.service.MaterialService;
 import com.example.common.service.ProductService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,7 +34,9 @@ public class ProductServiceImpl implements ProductService {
 
     private final MaterialService materialService;
 
-    public ProductServiceImpl(ProductRepository productRepository, ImageRepository imageRepository, CategoryRepository categoryRepository, SizeRepository sizeRepository, MaterialRepository materialRepository, MaterialService materialService) {
+    private final UserRepository userRepository;
+
+    public ProductServiceImpl(ProductRepository productRepository, ImageRepository imageRepository, CategoryRepository categoryRepository, SizeRepository sizeRepository, MaterialRepository materialRepository, MaterialService materialService, UserRepository userRepository) {
         this.productRepository = productRepository;
         this.imageRepository = imageRepository;
         this.categoryRepository = categoryRepository;
@@ -40,6 +44,7 @@ public class ProductServiceImpl implements ProductService {
 
         this.materialRepository = materialRepository;
         this.materialService = materialService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -101,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product createProduct(MultipartFile [] multipartFile, double height, double width, List<Long> materials, Product product,String answer,
-                                 Category category,String title,String desc,int count) {
+                                 Category category,String title,String desc,int count,User user) {
        double invoicePrice = 0;
        List<Material> materialList = new ArrayList<>();
         for (Long material : materials) {
@@ -144,10 +149,18 @@ public class ProductServiceImpl implements ProductService {
                 .description(desc)
                 .build();
         Product product1 = product;
+        List<Product> productList = new ArrayList<>();
+        productList.add(product1);
         if (answer.equals("yes")){
             productRepository.save(product1);
+            user.setProducts(productList);
         }
         return product;
+    }
+
+    @Override
+    public Page<Product> findByPageable(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
 
@@ -161,5 +174,15 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return productList;
+    }
+
+    @Override
+    public List<Product> findAllByUserId(long id) {
+        return productRepository.findAllByUsersId(id);
+    }
+
+    @Override
+    public List<Product> findAllByName(String keyword) {
+        return productRepository.findByTitle(keyword);
     }
 }

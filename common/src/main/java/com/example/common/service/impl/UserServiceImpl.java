@@ -102,6 +102,7 @@ public class UserServiceImpl implements UserService {
         return byEmail.get();
     }
 
+
     @Override
     public List<User> findAll() {
         return userRepository.findAll();
