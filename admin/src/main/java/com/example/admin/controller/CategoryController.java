@@ -2,7 +2,6 @@ package com.example.admin.controller;
 
 import com.example.common.model.Category;
 import com.example.common.service.CategoryService;
-import com.example.common.service.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;

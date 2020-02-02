@@ -41,7 +41,6 @@ public class ProductServiceImpl implements ProductService {
         this.imageRepository = imageRepository;
         this.categoryRepository = categoryRepository;
         this.sizeRepository = sizeRepository;
-
         this.materialRepository = materialRepository;
         this.materialService = materialService;
         this.userRepository = userRepository;
@@ -58,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAllByMaterials(String  title) {
+    public List<Product> findAllByMaterials(String title) {
         return productRepository.findAllByMaterialsTitle(title);
     }
 
@@ -73,22 +72,23 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void save(Product product, MultipartFile[] multipartFile, Size size, List<Long> materials, long category_id) throws IOException {
-        Image image = null;
+    public void save(Product product, MultipartFile[] multipartFile, Size size, List<Long> materials,
+                     long categoryId) throws IOException {
+
         List<Image> images = new ArrayList<>();
         for (MultipartFile file : multipartFile) {
             String picUrl = UUID.randomUUID() + "_" + file.getOriginalFilename();
             File file1 = new File(imageUploadDir, picUrl);
-            image = new Image();
+            Image image = new Image();
             image.setName(picUrl);
             file.transferTo(file1);
             images.add(image);
             imageRepository.save(image);
         }
-        List<Material> materialList = materialService.addMaterials(materials);
+        List<Material> materialList = materialService.getMaterials(materials);
 
         sizeRepository.save(size);
-        Category category = categoryRepository.getOne(category_id);
+        Category category = categoryRepository.getOne(categoryId);
         product = Product.builder()
                 .category(category)
                 .size(size)
@@ -105,24 +105,26 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product createProduct(MultipartFile [] multipartFile, double height, double width, List<Long> materials, Product product,String answer,
-                                 Category category,String title,String desc,int count,User user) {
-       double invoicePrice = 0;
-       List<Material> materialList = new ArrayList<>();
+    public Product createProduct(MultipartFile[] multipartFile, double height, double width,
+                                 List<Long> materials, Product product, String answer,
+                                 Category category, String title, String desc, int count, User user) {
+
+        List<Material> materialList = new ArrayList<>();
         for (Long material : materials) {
             Material one = materialRepository.getOne(material);
             materialList.add(one);
         }
+        double invoicePrice = 0;
         for (Material material : materialList) {
-            double invoicePrice1 = material.getInvoicePrice();
-          invoicePrice = invoicePrice1++;
+             invoicePrice = material.getInvoicePrice();
+            invoicePrice += invoicePrice;
         }
-        Image image = null;
+
         List<Image> images = new ArrayList<>();
         for (MultipartFile file : multipartFile) {
             String picUrl = UUID.randomUUID() + "_" + file.getOriginalFilename();
             File file1 = new File(imageUploadDir, picUrl);
-            image = new Image();
+          Image image = new Image();
             image.setName(picUrl);
             try {
                 file.transferTo(file1);
@@ -148,12 +150,13 @@ public class ProductServiceImpl implements ProductService {
                 .category(category)
                 .description(desc)
                 .build();
-        Product product1 = product;
+
         List<Product> productList = new ArrayList<>();
-        productList.add(product1);
-        if (answer.equals("yes")){
-            productRepository.save(product1);
+        productList.add(product);
+        if ("yes".equals(answer)) {
+            productRepository.save(product);
             user.setProducts(productList);
+            userRepository.save(user);
         }
         return product;
     }
@@ -164,9 +167,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-
     @Override
-    public List<Product> addProducts(List<Long> products) {
+    public List<Product> getProducts(List<Long> products) {
         List<Product> productList = new ArrayList<>();
         for (Long product : products) {
             Product byId = findById(product);

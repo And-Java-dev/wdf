@@ -1,22 +1,24 @@
 package com.example.common.service.impl;
 
+import com.example.common.dto.OrderProductDto;
+import com.example.common.exception.ResourceNotFoundException;
 import com.example.common.model.Order;
 import com.example.common.model.OrderStatus;
-import com.example.common.model.Product;
-import com.example.common.model.User;
+import com.example.common.repository.OrderProductRepository;
 import com.example.common.repository.OrderRepository;
 import com.example.common.repository.ProductRepository;
 import com.example.common.repository.UserRepository;
 import com.example.common.service.OrderService;
-import org.springframework.format.annotation.DateTimeFormat;
+import com.example.common.service.ProductService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -27,10 +29,16 @@ public class OrderServiceImpl implements OrderService {
 
     private final ProductRepository productRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserRepository userRepository, ProductRepository productRepository) {
+    private final ProductService productService;
+
+    private final OrderProductRepository orderProductRepository;
+
+    public OrderServiceImpl(OrderRepository orderRepository, UserRepository userRepository, ProductRepository productRepository, ProductService productService, OrderProductRepository orderProductRepository) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.productService = productService;
+        this.orderProductRepository = orderProductRepository;
     }
 
     @Override
@@ -53,9 +61,22 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAllByDate(date);
     }
 
+
+
     @Override
-    public List<Order> findAllByProductsId(long products_id) {
-        return orderRepository.findAllByProductsId(products_id);
+    public List<Order> getAllOrders() {
+        return this.orderRepository.findAll();
+    }
+
+    @Override
+    public Order create(Order order) {
+        order.setDate(new Date());
+        return this.orderRepository.save(order);
+    }
+
+    @Override
+    public void update(Order order) {
+        this.orderRepository.save(order);
     }
 
     @Override
@@ -73,30 +94,30 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.deleteById(id);
     }
 
-    @Override
-    public void save(Order order, long user_id, List<Long> products) {
-        List<Product> products1 = new ArrayList<>();
-        double total = 0;
-        for (Long product : products) {
-            Product one = productRepository.getOne(product);
-            products1.add(one);
-            double price = one.getPrice();
-            total = price++;
-        }
-        LocalTime localTime = LocalTime.now();
-        LocalDateTime localDateTime = LocalDateTime.now();
-        User user = userRepository.getOne(user_id);
-        order = Order.builder()
-                .date( new Date())
-                .deadline(localDateTime.plusDays(10))
-                .products(products1)
-                .time(localTime)
-                .user(user)
-                .price(total)
-                .orderStatus(OrderStatus.NEW)
-                .build();
-        orderRepository.save(order);
-    }
+//    @Override
+//    public void save(Order order, long userId, List<Long> products) {
+//        List<Product> productList = new ArrayList<>();
+//        double total = 0;
+//        for (Long product : products) {
+//            Product one = productRepository.getOne(product);
+//            productList.add(one);
+//            double price = one.getPrice();
+//            total += price;
+//        }
+//        LocalTime localTime = LocalTime.now();
+//        LocalDateTime localDateTime = LocalDateTime.now();
+//        User user = userRepository.getOne(userId);
+//        order = Order.builder()
+//                .date( new Date())
+//                .deadline(localDateTime.plusDays(10))
+//                .products(productList)
+//                .time(localTime)
+//                .user(user)
+//                .price(total)
+//                .orderStatus(OrderStatus.NEW)
+//                .build();
+//        orderRepository.save(order);
+//    }
 
     @Override
     public void changeOrderStatus(OrderStatus orderStatus,long id) {
@@ -112,7 +133,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Integer> findOrdersByDeadLine(){
-        List<Order> all = orderRepository.findAll();
+        List<Order> all = orderRepository.findAllByDeadlineDayOfMonth();
         List<Integer> days = new ArrayList<>();
         for (Order order : all) {
             int dayOfMonth = order.getDeadline().getDayOfMonth();
@@ -122,21 +143,55 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public int  findByStatus(){
-        List<Order> allByOrderStatus = orderRepository.findAllByOrderStatus(OrderStatus.NEW);
-        List<Order> allByOrderStatus1 = orderRepository.findAllByOrderStatus(OrderStatus.COMPLETED);
-        int count = allByOrderStatus.size() + allByOrderStatus1.size();
-        return count;
+    public Double findAllPerformedOrdersPriceSum() {
+        return orderRepository.findAllPerformedOrdersPriceSum();
     }
 
     @Override
-    public double findAllOrdersPrice(){
-        double allPrice =0;
-        List<Order> all = orderRepository.findAll();
-        for (Order order : all) {
-            double price = order.getPrice();
-            allPrice = price++;
-        }
-        return allPrice;
+    public int  findCountByStatus(){
+        return orderRepository.countAllByOrderStatus(OrderStatus.NEW) + orderRepository.countAllByOrderStatus(OrderStatus.COMPLETED);
     }
+
+    @Override
+    public double findAllOrdersPriceSum() {
+        return orderRepository.findAllOrdersPriceSum();
+    }
+
+    @Override
+    public Double findAllPerformedOrdersPriceSumByDate(int days) {
+        return orderRepository.findAllPerformedOrdersPriceSumByDate(days);
+    }
+
+    @Override
+    public List<Order> findAllByDeadlineDayOfMonth() {
+        return orderRepository.findAllByDeadlineDayOfMonth();
+    }
+
+    @Override
+    public void validateProductsExistence(List<OrderProductDto> orderProducts) {
+        List<OrderProductDto> list = orderProducts
+                .stream()
+                .filter(op -> Objects.isNull(productService.findById(op
+                        .getProduct()
+                        .getId())))
+                .collect(Collectors.toList());
+
+        if (!CollectionUtils.isEmpty(list)) {
+            new ResourceNotFoundException("Product not found");
+        }
+    }
+
+    public static class OrderForm {
+
+        private List<OrderProductDto> productOrders;
+
+        public List<OrderProductDto> getProductOrders() {
+            return productOrders;
+        }
+
+        public void setProductOrders(List<OrderProductDto> productOrders) {
+            this.productOrders = productOrders;
+        }
+    }
+
 }

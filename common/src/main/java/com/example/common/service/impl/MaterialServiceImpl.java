@@ -24,19 +24,19 @@ public class MaterialServiceImpl implements MaterialService {
 
     private final MaterialRepository materialRepository;
 
-    public MaterialServiceImpl( ImageRepository imageRepository, MaterialRepository materialRepository) {
+    public MaterialServiceImpl(ImageRepository imageRepository, MaterialRepository materialRepository) {
         this.imageRepository = imageRepository;
         this.materialRepository = materialRepository;
     }
 
     @Override
-    public List<Material> findAllByCategoriesId(long categories_id) {
-        return materialRepository.findAllByCategoriesId(categories_id);
+    public List<Material> findAllByCategoriesId(long categoriesId) {
+        return materialRepository.findAllByCategoriesId(categoriesId);
     }
 
     @Override
-    public List<Material> findAllByProductsId(long products_id) {
-        return materialRepository.findAllByProductsId(products_id);
+    public List<Material> findAllByProductsId(long productsId) {
+        return materialRepository.findAllByProductsId(productsId);
     }
 
     @Override
@@ -45,18 +45,18 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public List<Material> findAllByMaterialCategoryTitle(String materialCategory_title) {
-        return materialRepository.findAllByMaterialCategoryTitle(materialCategory_title);
+    public List<Material> findAllByMaterialCategoryTitle(String materialCategoryTitle) {
+        return materialRepository.findAllByMaterialCategoryTitle(materialCategoryTitle);
     }
 
     @Override
     public void save(Size size, MaterialCategory materialCategory, MultipartFile[] multipartFiles, List<Category> categories, Material material) throws IOException {
-        Image image = null;
+
         List<Image> images = new ArrayList<>();
         for (MultipartFile file : multipartFiles) {
             String picUrl = UUID.randomUUID() + "_" + file.getOriginalFilename();
             File file1 = new File(imageUploadDir, picUrl);
-            image = new Image();
+            Image image = new Image();
             image.setName(picUrl);
             file.transferTo(file1);
             images.add(image);
@@ -88,7 +88,7 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     @Override
-    public List<Material> addMaterials(List<Long> materials) {
+    public List<Material> getMaterials(List<Long> materials) {
         List<Material> materialList = new ArrayList<>();
         for (Long material : materials) {
             Material byId = findById(material);

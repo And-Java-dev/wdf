@@ -29,7 +29,7 @@ public class Image {
 
 
     @JsonIgnore
-    @ManyToMany(cascade=CascadeType.ALL ,mappedBy = "images")
+    @ManyToMany(cascade=CascadeType.ALL ,mappedBy = "images",fetch = FetchType.LAZY)
     private List<Product> products;
 
     @JsonIgnore

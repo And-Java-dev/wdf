@@ -26,27 +26,27 @@ public class ProductController {
         this.categoryService = categoryService;
     }
 
-//add product
+    //add product
     @PostMapping("/addProduct")
-    public String addProduct(Product product,@RequestParam("image") MultipartFile[] multipartFile,@RequestParam("size") Size size,
-                          @RequestParam("materials")List<Long>materials,   @RequestParam("category_id") long category_id) throws IOException {
-        productService.save(product,multipartFile,size,materials,category_id);
+    public String addProduct(Product product, @RequestParam("image") MultipartFile[] multipartFile, @RequestParam("size") Size size,
+                             @RequestParam("materials") List<Long> materials, @RequestParam("category_id") long category_id) throws IOException {
+        productService.save(product, multipartFile, size, materials, category_id);
 
         return "redirect:/boxed-layout";
 
     }
 
-//find all products
+    //find all products
     @GetMapping("/allProducts")
-    public String findAll(ModelMap modelMap){
+    public String findAll(ModelMap modelMap) {
         List<Product> all = productService.findAll();
-        modelMap.addAttribute("all",all);
+        modelMap.addAttribute("all", all);
         return "data-table-product";
     }
 
-//find products by categoryName
+    //find products by categoryName
     @GetMapping("/productsByCategory")
-    public String findAllByCategory(ModelMap modelMap, @RequestParam("name") String name){
+    public String findAllByCategory(ModelMap modelMap, @RequestParam("name") String name) {
         List<Product> allByCategory = productService.findAllByCategory(name);
         modelMap.addAttribute("allByCategory", allByCategory);
         return "redirect:/singleProduct";
@@ -54,18 +54,18 @@ public class ProductController {
 
     //go product page
     @GetMapping("/single/product")
-    public String singleProduct(ModelMap modelMap,@RequestParam("id") long  id){
+    public String singleProduct(ModelMap modelMap, @RequestParam("id") long id) {
         Product product = productService.findById(id);
         List<Category> allCategories = categoryService.findAll();
         modelMap.addAttribute("product", product);
         modelMap.addAttribute("all", allCategories);
-        modelMap.addAttribute("images",productService.findById(id).getImages());
+        modelMap.addAttribute("images", productService.findById(id).getImages());
         return "singleProduct";
     }
 
     //delete product by id
     @DeleteMapping("/deleteById")
-    public String deleteById(@RequestParam("id") long id){
+    public String deleteById(@RequestParam("id") long id) {
         productService.deleteById(id);
         return "redirect:/singleProduct";
     }

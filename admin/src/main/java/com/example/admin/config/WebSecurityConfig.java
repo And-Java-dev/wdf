@@ -24,16 +24,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder());
     }
 
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .formLogin().loginPage("/admin/login").and()
                 .authorizeRequests()
                 .antMatchers("/admin").hasAnyRole("ADMIN")
-                .anyRequest().authenticated()
                 .and()
-                .formLogin();
+                .formLogin().loginPage("/admin/login.html")
+//                .defaultSuccessUrl("/boxed-layout.html", true)
+                .and()
+                .logout()
+                .logoutSuccessUrl("/admin/login.html");
     }
 
     @Bean

@@ -1,6 +1,5 @@
 package com.example.common.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +11,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
-import java.util.List;
 
 @Data
 @Builder
@@ -42,13 +40,6 @@ public class Order {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime deadline;
 
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(
-            name = "order_product",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id"))
-    private List<Product> products;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
@@ -56,6 +47,9 @@ public class Order {
     @Column
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus=OrderStatus.NEW;
+
+    @Column
+    private int orderProductsSize;
 
 
 

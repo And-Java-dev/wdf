@@ -29,26 +29,26 @@ public class MaterialController {
 
     //go material page
     @GetMapping("/single/material")
-    public String singleOrder(ModelMap modelMap, @RequestParam("id") int  id){
+    public String singleOrder(ModelMap modelMap, @RequestParam("id") int id) {
         Material material = materialService.findById(id);
         List<MaterialCategory> materialCategories = materialCategoryService.findAll();
-        modelMap.addAttribute("materialCategories",materialCategories);
-        modelMap.addAttribute("material",material);
-        modelMap.addAttribute("images",materialService.findById(id).getImages());
+        modelMap.addAttribute("materialCategories", materialCategories);
+        modelMap.addAttribute("material", material);
+        modelMap.addAttribute("images", materialService.findById(id).getImages());
 
         return "singleMaterial";
     }
 
     //find all materials
     @GetMapping("/allMaterials")
-    public String findAll(ModelMap modelMap){
+    public String findAll(ModelMap modelMap) {
         List<Material> all = materialService.findAll();
-        modelMap.addAttribute("all",all);
+        modelMap.addAttribute("all", all);
         return "data-table-material";
     }
 
     @DeleteMapping("/deleteById")
-    public String deleteById(@RequestParam("id") long id){
+    public String deleteById(@RequestParam("id") long id) {
         materialService.deleteById(id);
         return "redirect:/singleMaterial";
     }

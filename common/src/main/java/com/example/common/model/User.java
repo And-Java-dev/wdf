@@ -1,6 +1,7 @@
 package com.example.common.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,7 +58,8 @@ public class User {
     @OneToOne
     private Image image;
 
-    @ManyToMany
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_product",
             joinColumns = @JoinColumn(name = "user_id"),

@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Controller;
 
 import javax.persistence.*;
 import java.util.List;
@@ -62,10 +61,12 @@ public class Product {
     @Column
     private double rating;
 
-    @JsonIgnore
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "products")
-    private List<Order> orders;
+    @Column
+    private int view;
 
+
+
+    @JsonIgnore
     @ManyToMany(mappedBy = "products")
     private List<User> users;
 }

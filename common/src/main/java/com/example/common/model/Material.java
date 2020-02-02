@@ -38,6 +38,9 @@ public class Material {
     @Column
     private double rating;
 
+    @Column
+    private int view;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private MaterialCategory materialCategory;

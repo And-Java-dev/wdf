@@ -38,13 +38,13 @@ public class ImageServiceImpl implements ImageService {
 
 
     @Override
-    public List<Image> findAllByProductId(long prod_id) {
-        return imageRepository.findAllByProductsId(prod_id);
+    public List<Image> findAllByProductId(long prodId) {
+        return imageRepository.findAllByProductsId(prodId);
     }
 
     @Override
-    public List<Image> findAllByMaterialId(long material_id) {
-        return imageRepository.findAllByMaterialsId(material_id);
+    public List<Image> findAllByMaterialId(long materialId) {
+        return imageRepository.findAllByMaterialsId(materialId);
     }
 
     @Override

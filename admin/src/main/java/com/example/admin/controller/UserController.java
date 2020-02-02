@@ -2,29 +2,26 @@ package com.example.admin.controller;
 
 
 import com.example.admin.security.CurrentUser;
-import com.example.common.model.Product;
+import com.example.common.model.Address;
 import com.example.common.model.User;
-import com.example.common.service.CategoryService;
 import com.example.common.service.EmailService;
-import com.example.common.service.ProductService;
 import com.example.common.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
 @RequestMapping("/admin/users")
 public class UserController {
 
-    private final ProductService productService;
 
     private final UserService userService;
-
-    private final CategoryService categoryService;
 
 
     @Value("${image.upload.dir}")
@@ -32,25 +29,30 @@ public class UserController {
 
     private final EmailService emailService;
 
-    public UserController(ProductService productService, EmailService emailService, UserService userService, CategoryService categoryService) {
-        this.productService = productService;
+    public UserController(EmailService emailService, UserService userService) {
         this.emailService = emailService;
         this.userService = userService;
-        this.categoryService = categoryService;
+
     }
 
     @GetMapping("/register")
     public String register(ModelMap modelMap, @AuthenticationPrincipal CurrentUser currentUser) {
-        if(currentUser != null) {
+        if (currentUser != null) {
             modelMap.addAttribute("user", currentUser.getUser());
         }
         return "form-elemnents";
     }
 
+
     @PostMapping("/register")
-    public String registerPost(@ModelAttribute User user) {
+    public String registerPost(@ModelAttribute User user, @RequestParam("file") MultipartFile multipartFile,
+                               @RequestParam("address") Address address) {
         if (userService.isEmailExists(user.getEmail())) {
-            userService.save(user);
+            try {
+                userService.register(user,multipartFile,address);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return "redirect:/boxed-layout";
         }
         return "redirect:/form-elements";
@@ -65,14 +67,14 @@ public class UserController {
 
     //find all users
     @GetMapping("/allUsers")
-    public String findAll(ModelMap modelMap){
+    public String findAll(ModelMap modelMap) {
         List<User> all = userService.findAll();
-        modelMap.addAttribute("all",all);
+        modelMap.addAttribute("all", all);
         return "data-table-user";
     }
 
     @DeleteMapping("/deleteById")
-    public String deleteById(@RequestParam("id") long id){
+    public String deleteById(@RequestParam("id") long id) {
         userService.deleteById(id);
         return "redirect:/data-table-user";
     }
