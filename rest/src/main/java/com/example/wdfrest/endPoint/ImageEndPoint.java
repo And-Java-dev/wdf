@@ -33,7 +33,7 @@ public class ImageEndPoint {
     }
 
     @GetMapping("material")
-    public List<Image> findAllByMaterialId(@RequestParam("material_id") long material_id) {
+    public List<Image> getAllByMaterialId(@RequestParam("material_id") long material_id) {
         return imageService.findAllByMaterialId(material_id);
     }
 
@@ -60,13 +60,13 @@ public class ImageEndPoint {
 //    }
 
     @GetMapping("all")
-    public List<Image> findAll() {
+    public List<Image> getAll() {
         return imageService.findAll();
     }
 
 
     @GetMapping("{id}")
-    public ResponseEntity findById(@PathVariable("id") long id){
+    public ResponseEntity getById(@PathVariable("id") long id){
         return ResponseEntity.ok(imageService.findById(id));
     }
 }

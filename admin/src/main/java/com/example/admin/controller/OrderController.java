@@ -1,15 +1,22 @@
 package com.example.admin.controller;
 
+import com.example.common.dto.OrderProductDto;
 import com.example.common.model.Order;
+import com.example.common.model.OrderProduct;
 import com.example.common.model.OrderStatus;
+import com.example.common.model.Product;
+import com.example.common.service.OrderProductService;
 import com.example.common.service.OrderService;
+import com.example.common.service.ProductService;
+import com.example.common.service.UserService;
+import com.example.common.service.impl.OrderServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,9 +25,15 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final OrderProductService orderProductService;
+    private final ProductService productService;
+    private final UserService userService;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, OrderProductService orderProductService, ProductService productService, UserService userService) {
         this.orderService = orderService;
+        this.orderProductService = orderProductService;
+        this.productService = productService;
+        this.userService = userService;
     }
 
     //go order page
@@ -33,14 +46,60 @@ public class OrderController {
 
     //add order
     @PostMapping("/add/order")
-    public String addOrder(Order order, @RequestParam("userId") long userId, @RequestParam("products") List<Long> products) {
-//        orderService.save(order, userId, products);
+    public String addOrder(@ModelAttribute OrderServiceImpl.OrderForm form,@RequestParam("userId") long userId) {
+        List<OrderProductDto> formDto = form.getProductOrders();
+        orderService.validateProductsExistence(formDto);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalTime localTime = LocalTime.now();
+
+        Order order = Order.builder()
+                .time(localTime)
+                .orderStatus(OrderStatus.NEW)
+                .deadline(localDateTime.plusDays(10))
+                .user(userService.findById(userId))
+                .build();
+        order = this.orderService.create(order);
+        List<OrderProduct> orderProducts = new ArrayList<>();
+        for (OrderProductDto dto : formDto) {
+            OrderProduct orderProduct = new OrderProduct();
+            Product byId = productService.findById(dto.getProduct().getId());
+
+            if (byId.getCount()<dto.getQuantity()){
+                throw new NullPointerException();
+            }
+
+            orderProduct.setOrder(order);
+            orderProduct.setProduct(byId);
+            orderProduct.setQuantity(dto.getQuantity());
+            orderProducts.add(orderProductService.create(orderProduct));
+            byId.setCount(byId.getCount() - orderProduct.getQuantity());
+            productService.save(byId);
+        }
+
+        double price = 0;
+        for (OrderProduct orderProduct : orderProducts) {
+            price += orderProduct.getTotalPrice();
+        }
+        order.setPrice(price);
+        order.setOrderProductsSize(formDto.size());
+
+
+        this.orderService.update(order);
+
+//        String uri = ServletUriComponentsBuilder
+//                .fromCurrentServletMapping()
+//                .path("/orders/{id}")
+//                .buildAndExpand(order.getId())
+//                .toString();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Location", uri);
+
         return "redirect:/";
     }
 
     //find all orders
     @GetMapping("/allOrder")
-    public String findAll(ModelMap modelMap) {
+    public String getAll(ModelMap modelMap) {
         List<Order> all = orderService.findAll();
         List<OrderStatus> orderStatuses = Arrays.asList(OrderStatus.NEW,OrderStatus.DENIED,OrderStatus.PERFORMED,OrderStatus.COMPLETED);
         modelMap.addAttribute("orderStatuses",orderStatuses);
@@ -49,7 +108,7 @@ public class OrderController {
     }
 
     @GetMapping("/calendar")
-    public String findAllOrders(ModelMap modelMap) {
+    public String getAllOrders(ModelMap modelMap) {
         List<Order> orders = orderService.findAll();
         //orders deadLine days this month
         List<Integer> days = orderService.findOrdersByDeadLine();

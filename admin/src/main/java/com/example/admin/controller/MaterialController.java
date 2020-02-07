@@ -41,7 +41,7 @@ public class MaterialController {
 
     //find all materials
     @GetMapping("/allMaterials")
-    public String findAll(ModelMap modelMap) {
+    public String getAll(ModelMap modelMap) {
         List<Material> all = materialService.findAll();
         modelMap.addAttribute("all", all);
         return "data-table-material";

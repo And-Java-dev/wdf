@@ -187,4 +187,9 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> findAllByName(String keyword) {
         return productRepository.findByTitle(keyword);
     }
+
+    @Override
+    public List<Product> findByMarketability() {
+        return null;
+    }
 }

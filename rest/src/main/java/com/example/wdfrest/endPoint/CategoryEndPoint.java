@@ -19,7 +19,7 @@ public class CategoryEndPoint {
     }
 
     @GetMapping
-    public List<Category> findAll(){
+    public List<Category> getAll(){
         return categoryService.findAll();
     }
 

@@ -19,7 +19,7 @@ public class MaterialCategoryEndpoint {
     }
 
     @GetMapping
-    public List<MaterialCategory> findAll(){
+    public List<MaterialCategory> getAll(){
         return materialCategoryService.findAll();
     }
 }

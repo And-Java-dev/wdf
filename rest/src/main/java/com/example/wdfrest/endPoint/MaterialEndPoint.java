@@ -23,28 +23,28 @@ public class MaterialEndPoint {
 
 
     @GetMapping("{id}")
-    public ResponseEntity findById(@PathVariable("id") long id){
+    public ResponseEntity getById(@PathVariable("id") long id){
         Material byId = materialService.findById(id);
         return ResponseEntity.ok(byId);
     }
 
     @GetMapping
-    public List<Material> findAll(){
+    public List<Material> getAll(){
          return materialService.findAll();
     }
 
     @GetMapping("findByCategory")
-    public List<Material> findByCategory(@RequestParam("categoryId") long cat_id){
+    public List<Material> getByCategory(@RequestParam("categoryId") long cat_id){
         return materialService.findAllByCategoriesId(cat_id);
     }
 
     @GetMapping("findByProduct")
-    public List<Material> findByProduct(@RequestParam("productId") long prod_id){
+    public List<Material> getByProduct(@RequestParam("productId") long prod_id){
         return materialService.findAllByProductsId(prod_id);
     }
 
     @GetMapping("findByCatTitle")
-    public List<Material> findByMaterialCatTitle(@RequestParam("title") String title){
+    public List<Material> getByMaterialCatTitle(@RequestParam("title") String title){
         return materialService.findAllByMaterialCategoryTitle(title);
     }
 

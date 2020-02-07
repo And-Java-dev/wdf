@@ -3,7 +3,6 @@ package com.example.common.service;
 import com.example.common.dto.OrderProductDto;
 import com.example.common.model.Order;
 import com.example.common.model.OrderStatus;
-import com.example.common.model.Product;
 
 import java.time.LocalDateTime;
 import java.util.Date;

@@ -1,17 +1,13 @@
 package com.example.common.service.impl;
 
 import com.example.common.model.Image;
-import com.example.common.model.Material;
-import com.example.common.model.Product;
 import com.example.common.repository.ImageRepository;
 import com.example.common.service.ImageService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.io.File;
 import java.io.FileInputStream;

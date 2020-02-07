@@ -63,7 +63,7 @@ public class MainController {
     }
 
     @PostMapping("/ordersSumByIntervalDays")
-    public String findOrdersSumByDaysInterval(@RequestParam("days")int days){
+    public String getOrdersSumByDaysInterval(@RequestParam("days")int days){
         orderService.findAllPerformedOrdersPriceSumByDate(days);
         return "redirect:/";
     }

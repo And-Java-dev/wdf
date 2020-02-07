@@ -21,8 +21,7 @@ public interface ProductService {
     Product createProduct(MultipartFile [] multipartFile, double height, double width, List<Long> materials,
                           Product product, String answer, Category category,String title,String desc,int count,User user);
     List<Product>getProducts(List<Long> products);
-
     List<Product> findAllByUserId(long id);
-
     List<Product> findAllByName(String keyword);
+    List<Product> findByMarketability();
 }

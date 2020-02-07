@@ -26,4 +26,6 @@ public interface UserService {
 
     User findByEmail(String email);
 
+    void returnPassword(String email,long userId);
+
 }

@@ -38,7 +38,7 @@ public class ProductController {
 
     //find all products
     @GetMapping("/allProducts")
-    public String findAll(ModelMap modelMap) {
+    public String getAll(ModelMap modelMap) {
         List<Product> all = productService.findAll();
         modelMap.addAttribute("all", all);
         return "data-table-product";
@@ -46,7 +46,7 @@ public class ProductController {
 
     //find products by categoryName
     @GetMapping("/productsByCategory")
-    public String findAllByCategory(ModelMap modelMap, @RequestParam("name") String name) {
+    public String getAllByCategory(ModelMap modelMap, @RequestParam("name") String name) {
         List<Product> allByCategory = productService.findAllByCategory(name);
         modelMap.addAttribute("allByCategory", allByCategory);
         return "redirect:/singleProduct";

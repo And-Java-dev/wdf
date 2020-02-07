@@ -25,20 +25,16 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
-    private final UserRepository userRepository;
 
-    private final ProductRepository productRepository;
 
     private final ProductService productService;
 
-    private final OrderProductRepository orderProductRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserRepository userRepository, ProductRepository productRepository, ProductService productService, OrderProductRepository orderProductRepository) {
+
+    public OrderServiceImpl(OrderRepository orderRepository, ProductService productService) {
         this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
-        this.productRepository = productRepository;
         this.productService = productService;
-        this.orderProductRepository = orderProductRepository;
+
     }
 
     @Override

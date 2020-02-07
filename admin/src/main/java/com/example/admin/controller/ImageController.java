@@ -36,7 +36,7 @@ public class ImageController {
 
     //find all products
     @GetMapping("/allImages")
-    public String findAll(ModelMap modelMap) {
+    public String getAll(ModelMap modelMap) {
         List<Image> all = imageService.findAll();
         modelMap.addAttribute("all", all);
         return "photo-gallery";

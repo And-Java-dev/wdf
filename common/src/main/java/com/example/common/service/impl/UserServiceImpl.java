@@ -103,6 +103,13 @@ public class UserServiceImpl implements UserService {
         return byEmail.orElse(null);
     }
 
+    @Override
+    public void returnPassword(String email, long userId) {
+        User one = userRepository.getOne(userId);
+        emailService.sendSimpleMessage(one.getEmail(),
+                "Dear " + one.getName() + " " + one.getSurname() +"this is your password     ", one.getPassword());
+    }
+
 
     @Override
     public List<User> findAll() {

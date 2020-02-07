@@ -3,8 +3,6 @@ package com.example.wdfrest.endPoint;
 import com.example.common.model.Category;
 import com.example.common.model.Order;
 import com.example.common.model.Product;
-import com.example.common.service.ImageService;
-import com.example.common.service.MaterialService;
 import com.example.common.service.OrderService;
 import com.example.common.service.ProductService;
 import com.example.wdfrest.security.CurrentUser;
@@ -13,7 +11,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
 import java.util.List;
 
 @RequestMapping("/rest/products/")
@@ -59,20 +56,20 @@ public class ProductEndPoint {
 //    }
 
     @GetMapping
-    public List<Product> findAll() {
+    public List<Product> getAll() {
         return productService.findAll();
 
     }
 
-//    @GetMapping("a")
-//    public ResponseEntity a(){
-//        List<Order> allByDeadline_dayOfMonth = orderService.findAllByDeadline_DayOfMonth();
-//        return ResponseEntity.ok(allByDeadline_dayOfMonth);
-//
-//    }
+    @GetMapping("a")
+    public ResponseEntity a(){
+        List<Order> allByDeadline_dayOfMonth = orderService.findAllByDeadlineDayOfMonth();
+        return ResponseEntity.ok(allByDeadline_dayOfMonth);
+
+    }
 
     @GetMapping("{id}")
-    public ResponseEntity findById(@PathVariable("id") long id) {
+    public ResponseEntity getById(@PathVariable("id") long id) {
         return ResponseEntity.ok(productService.findById(id));
     }
 
@@ -83,12 +80,12 @@ public class ProductEndPoint {
     }
 
     @GetMapping("/cat")
-    public List<Product> findAllByCategory(@RequestParam("title") String title) {
+    public List<Product> getAllByCategory(@RequestParam("title") String title) {
         return productService.findAllByCategory(title);
     }
 
     @GetMapping("/material")
-    public List<Product> findAllByMaterialTitle(@RequestParam("material_title") String materials_title) {
+    public List<Product> getAllByMaterialTitle(@RequestParam("material_title") String materials_title) {
         return productService.findAllByMaterials(materials_title);
     }
 }

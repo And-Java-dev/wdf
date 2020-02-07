@@ -101,13 +101,13 @@ public class OrderEndPoint {
     }
 
     @GetMapping("findByUserId")
-    public List<Order> findByUserId(@AuthenticationPrincipal CurrentUser currentUser) {
+    public List<Order> getByUserId(@AuthenticationPrincipal CurrentUser currentUser) {
         List<Order> byUserId = orderService.findAllByUserId(currentUser.getUser().getId());
         return byUserId;
     }
 
     @GetMapping("findByStatus")
-    public List<Order> findByOrderStatus(@RequestParam("orderStatus") OrderStatus orderStatus) {
+    public List<Order> getByOrderStatus(@RequestParam("orderStatus") OrderStatus orderStatus) {
         return orderService.findAllByOrderStatus(orderStatus);
     }
 
@@ -134,19 +134,19 @@ public class OrderEndPoint {
 
 
     @GetMapping("byDeadLine")
-    public List<Order> findByDeadLine(@RequestParam("deadLine") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
+    public List<Order> getByDeadLine(@RequestParam("deadLine") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime localDateTime) {
         return orderService.findAllByDeadLine(localDateTime);
     }
 
     @GetMapping("byDate")
 //    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    public List<Order> findAllByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
+    public List<Order> getAllByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
         List<Order> allByDate = orderService.findAllByDate(date);
         return allByDate;
     }
 
     @GetMapping("findById/{id}")
-    public ResponseEntity findById(@PathVariable("id") long id) {
+    public ResponseEntity getById(@PathVariable("id") long id) {
         Order byId = orderService.findById(id);
         return ResponseEntity.ok(byId);
     }

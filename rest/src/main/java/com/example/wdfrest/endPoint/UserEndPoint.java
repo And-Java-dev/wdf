@@ -75,6 +75,12 @@ public class UserEndPoint {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("returnPassword")
+    public ResponseEntity returnPassword(@RequestParam("email") String email,@RequestParam("userId") long userId){
+        userService.returnPassword(email,userId);
+        return ResponseEntity.ok().build();
+    }
+
 
 
     @PutMapping("addImage")
@@ -99,7 +105,7 @@ public class UserEndPoint {
     }
 
     @GetMapping("id")
-    public ResponseEntity findUserById(@AuthenticationPrincipal CurrentUser user) {
+    public ResponseEntity getUserById(@AuthenticationPrincipal CurrentUser user) {
         User byId = userService.findById(user.getUser().getId());
         return ResponseEntity.ok(byId);
     }
